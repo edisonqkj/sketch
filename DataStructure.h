@@ -228,6 +228,27 @@ typedef struct QueueLongLink
 			tmp->data = n;
 		}
 	}
+	long getvalue(long index)
+	{
+		/// get value
+		if (head == NULL)return -1;
+		if (index<0 || index>num - 1)return -1;
+		if (index == 0)
+			return head->data;
+		else if (index == num - 1)
+		{
+			return tail->data;
+		}
+		else
+		{
+			pNodeLong tmp = head;
+			for (long i = 0; i < index; i++)
+			{
+				tmp = tmp->next;
+			}
+			return tmp->data;
+		}
+	}
 	long maxvalue()
 	{
 		if (head == NULL) return -1;
@@ -340,7 +361,309 @@ typedef struct QueueLongLink
 		}
 	}
 }QueueLongLink, *pQueueLongLink;
+typedef struct QueueFloatLink
+{
+	/// This structure is extension of QueueLongLink.
+	/// Elements are float type;
+	typedef struct NodeFloat
+	{
+		float data;
+		struct NodeFloat* front;
+		struct NodeFloat* next;
+	}NodeFloat, *pNodeFloat;
 
+	long num;
+	pNodeFloat head;
+	pNodeFloat tail;
+
+	void init()
+	{
+		head = NULL;
+		tail = NULL;
+		num = 0;
+	}
+	void enque(float n)
+	{
+		if (head == NULL)
+		{
+			head = (pNodeFloat)malloc(sizeof(NodeFloat));
+			head->data = n;
+			head->front = NULL;
+			head->next = NULL;
+
+			tail = head;
+		}
+		else
+		{
+			pNodeFloat tmp = (pNodeFloat)malloc(sizeof(NodeFloat));
+			tmp->data = n;
+			tmp->front = tail;
+			tmp->next = NULL;
+			tail->next = tmp;
+
+			tail = tmp;
+		}
+		num++;
+	}
+	float deque()
+	{
+		/// data is positive
+		if (head == NULL)return-1;
+
+		pNodeFloat tmp = head;
+		head = head->next;
+		if (num == 1)
+			tail = NULL;
+		num--;
+		float n = tmp->data;
+		free(tmp);
+		return n;
+	}
+	float* getArray()
+	{
+		if (head == NULL)return NULL;
+
+		float* tmp = (float*)malloc(num*sizeof(float));
+		if (tmp == NULL) return NULL;
+		pNodeFloat tmpnode = head;
+		for (long i = 0; i < num; i++)
+		{
+			/// search link data
+			tmp[i] = tmpnode->data;
+			tmpnode = tmpnode->next;
+		}
+		return tmp;
+	}
+	bool exist(float n)
+	{
+		if (head == NULL) return false;
+
+		pNodeFloat tmp = head;
+		while (tmp != NULL)
+		{
+			if (tmp->data == n)
+				return true;
+			tmp = tmp->next;
+		}
+		return false;
+	}
+	void removeat(long index)
+	{
+		if (head == NULL) return;
+		if (index<0 || index>num - 1)
+			return;//AfxMessageBox("Index error!");
+		else if (index == 0)
+			deque();
+		else if (index == num - 1)
+		{
+			pNodeFloat tmp = tail;
+			tail->front->next = NULL;
+			tail = tail->front;
+			free(tmp);
+			tmp = NULL;
+		}
+		else
+		{
+			pNodeFloat tmp = head;
+			for (long i = 0; i < index; i++)
+			{
+				tmp = tmp->next;
+			}
+			tmp->front->next = tmp->next;
+			tmp->next->front = tmp->front;
+			free(tmp);
+			tmp = NULL;
+
+			num--;
+		}
+	}
+	void remove(float n)
+	{
+		if (head == NULL) return;
+
+		if (head->data == n)
+			deque();
+		else
+		{
+			pNodeFloat tmp = head->next;
+			while (tmp != NULL)
+			{
+				if (tmp->data == n)
+				{
+					tmp->front->next = tmp->next;
+					if (tmp == tail)
+					{
+						tail = tail->front;
+					}
+					else
+					{
+						tmp->next->front = tmp->front;
+					}
+					free(tmp);
+					tmp = NULL;
+
+					num--;
+					break;/// remove first 'n'
+				}//if
+				tmp = tmp->next;
+			}//while
+		}
+	}
+	void setvalue(long index, float n)
+	{
+		/// update value
+		if (head == NULL)return;
+		if (index<0 || index>num - 1)return;
+		//if (n < 0)return;
+		if (index == 0)
+			head->data = n;
+		else if (index == num - 1)
+		{
+			tail->data = n;
+		}
+		else
+		{
+			pNodeFloat tmp = head;
+			for (long i = 0; i < index; i++)
+			{
+				tmp = tmp->next;
+			}
+			tmp->data = n;
+		}
+	}
+	float getvalue(long index)
+	{
+		/// get value
+		if (head == NULL)return -1;
+		if (index<0 || index>num - 1)return -1;
+		if (index == 0)
+			return head->data;
+		else if (index == num - 1)
+		{
+			return tail->data;
+		}
+		else
+		{
+			pNodeFloat tmp = head;
+			for (long i = 0; i < index; i++)
+			{
+				tmp = tmp->next;
+			}
+			return tmp->data;
+		}
+	}
+	float maxvalue()
+	{
+		if (head == NULL) return -1;
+
+		if (num == 1)
+			return head->data;
+		float max = head->data;
+		pNodeFloat tmp = head->next;
+		while (tmp != NULL)
+		{
+			if (tmp->data > max)
+			{
+				max = tmp->data;
+			}//if
+			tmp = tmp->next;
+		}//while
+		return max;
+	}
+	float minvalue()
+	{
+		if (head == NULL) return -1;
+
+		if (num == 1)
+			return head->data;
+		float min = head->data;
+		pNodeFloat tmp = head->next;
+		while (tmp != NULL)
+		{
+			if (tmp->data < min)
+			{
+				min = tmp->data;
+			}//if
+			tmp = tmp->next;
+		}//while
+		return min;
+	}
+	float sum()
+	{
+		if (head == NULL) return -1;
+
+		if (num == 1)
+			return head->data;
+		float sum = head->data;
+		pNodeFloat tmp = head->next;
+		while (tmp != NULL)
+		{
+			sum += tmp->data;
+			tmp = tmp->next;
+		}//while
+		return sum;
+	}
+	void copyfrom(QueueFloatLink* queue)
+	{
+		if (queue->head == NULL)return;
+
+		/// cover all data
+		if (head != NULL)
+			this->clear();
+		pNodeFloat tmp = queue->head;
+		while (tmp != NULL)
+		{
+			this->enque(tmp->data);
+			tmp = tmp->next;
+		}
+	}
+	long indexof(float n)
+	{
+		if (head == NULL) return -1;
+
+		if (head->data == n)
+			return 0;
+		else if (tail->data == n)
+			return num - 1;
+		else
+		{
+			long index = 1;
+			pNodeFloat tmp = head->next;
+			while (tmp != NULL)
+			{
+				if (tmp->data == n)
+				{
+					return index;
+					break;/// return first 'n'
+				}//if
+				index++;
+				tmp = tmp->next;
+			}//while
+			return -1;
+		}
+	}
+	void clear()
+	{
+		while (head != NULL)
+			this->deque();
+		head = NULL;
+		tail = NULL;
+		num = 0;
+	}
+	void destory()
+	{
+		clear();
+	}
+	void print()
+	{
+		pNodeFloat tmp = head;
+		while (tmp != NULL)
+		{
+			TRACE("%f\n", tmp->data);
+			tmp = tmp->next;
+		}
+	}
+}QueueFloatLink, *pQueueFloatLink;
 struct QueueLong
 {
 	/// This structure is abandoned from version 14-12-26
